@@ -1,5 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+import re
+
+from src.data import Flat
 
 
 class DomovitaParser:
@@ -19,4 +22,40 @@ class DomovitaParser:
                 flat_links.append(a['href'])
                 page_from += 1
         filter_links = list(filter(lambda el: 'flats' in el, flat_links))
-        return flat_links
+        return filter_links
+
+    def enrich_links(self, links):
+        """function for parse all links and get elements"""
+
+        flats = []
+        for counter, link in enumerate(links):
+            resp = requests.get(link)
+            html = BeautifulSoup(resp.content, 'html.parser')
+
+            title = html.find('h1', class_='').text.strip()
+            price = html.find(attrs={"data-js": "show-tooltip"}).text
+            if len(price) > 15:
+                price = (re.sub('[^0-9]', '', price))
+            else:
+                price = 0
+            description = html.find('div', class_="seo-text_content-h")
+            if description is not None:
+                description = description.text.strip()
+            else:
+                description = None
+            date = html.find('span', class_="publication-info__item publication-info__publication-date").text.strip()
+            city = html.find(attrs={"id": "city"}).text.strip()
+
+            flats.append(Flat(
+                link-link,
+                title=title,
+                price=price,
+                description=description,
+                date=date,
+                city=city
+            ))
+            print(f"Обработано {counter} из {len(links)}")
+        return flats
+
+
+DomovitaParser()
