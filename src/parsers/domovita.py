@@ -45,6 +45,8 @@ class DomovitaParser:
                 description = None
             date = html.find('span', class_="publication-info__item publication-info__publication-date").text.strip()
             city = html.find(attrs={"id": "city"}).text.strip()
+            street = html.find('span', class_="icon-dom-map-geo-alt gray-light").text.strip()
+            area = html.find('span', class_="object-head__additional-info-item").text.strip()
 
             flats.append(Flat(
                 link-link,
