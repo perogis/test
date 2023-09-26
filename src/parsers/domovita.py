@@ -2,10 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+from base_parser import ParserStandart
 from src.data import Flat
 
 
-class DomovitaParser:
+class DomovitaParser(ParserStandart):
     """It's class-parser for parse data"""
 
     def get_parser_name(self):
@@ -60,4 +61,4 @@ class DomovitaParser:
         return flats
 
 
-DomovitaParser()
+DomovitaParser().update_with_last_flats()
