@@ -46,17 +46,28 @@ class DomovitaParser(ParserStandart):
                 description = None
             date = html.find('span', class_="publication-info__item publication-info__publication-date").text.strip()
             city = html.find(attrs={"id": "city"}).text.strip()
-            street = html.find('span', class_="icon-dom-map-geo-alt gray-light").text.strip()
-            area = html.find('span', class_="object-head__additional-info-item").text.strip()
+            div_steet = html.find_all("div", class_="object-info__parametr")
+            if len(div_steet) >= 5:
+                street = div_steet[6].text.strip()
+            else:
+                street = None
+            div_area = html.find_all("div", class_="object-info__parametr")
+            if len(div_area) >= 5:
+                area = div_area[7].text.strip()
+            else:
+                area = None
 
             flats.append(Flat(
-                link-link,
+                link=link,
                 title=title,
                 price=price,
                 description=description,
                 date=date,
-                city=city
+                city=city,
+                street=street,
+                area=area
             ))
+            print()
             print(f"Обработано {counter} из {len(links)}")
         return flats
 
