@@ -19,7 +19,8 @@ def create_flats_table():
                         date CHARACTER VARYING(100),
                         city CHARACTER VARYING(10),
                         street CHARACTER VARYING(100),
-                        area CHARACTER VARYING(50)
+                        area CHARACTER VARYING(50),
+                        images CHARACTER VARYING
                     )''')
 
 
@@ -27,6 +28,7 @@ def insert_flat(flat):
     with psycopg2.connect(dbname=DB_NAME, user=USER, password=PASSWORD, host=HOST) as conn:
         with conn.cursor() as curs:
             curs.execute('''
-            INSERT INTO flats (link, price, title, description, date, city, street, area) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            ''', (flat.link, flat.price, flat.title, flat.description, flat.date, flat.city, flat.street, flat.area))
+            INSERT INTO flats (link, price, title, description, date, city, street, area, images) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (flat.link, flat.price, flat.title, flat.description, flat.date, flat.city, flat.street, flat.area,
+                  flat.images))
