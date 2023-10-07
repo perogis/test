@@ -12,7 +12,7 @@ class DomovitaParser(ParserStandart):
     def get_parser_name(self):
         return "domovita"
 
-    def get_all_last_flats_links(self, page_from=2, page_to=5):
+    def get_all_last_flats_links(self, page_from=1, page_to=20):
         """function for get and filter flat links"""
 
         flat_links = []
@@ -35,7 +35,7 @@ class DomovitaParser(ParserStandart):
 
             title = html.find('h1', class_='').text.strip()
             price = html.find(attrs={"data-js": "show-tooltip"}).text
-            if len(price) > 15:
+            if len(price) < 15:
                 price = (re.sub('[^0-9]', '', price))
             else:
                 price = 0
@@ -46,9 +46,9 @@ class DomovitaParser(ParserStandart):
                 description = None
             date = html.find('span', class_="publication-info__item publication-info__publication-date").text.strip()
             city = html.find(attrs={"id": "city"}).text.strip()
-            div_steet = html.find_all("div", class_="object-info__parametr")
-            if len(div_steet) >= 5:
-                street = div_steet[6].text.strip()
+            div_street = html.find_all("div", class_="object-info__parametr")
+            if len(div_street) >= 5:
+                street = div_street[6].text.strip()
             else:
                 street = None
             div_area = html.find_all("div", class_="object-info__parametr")
@@ -56,6 +56,16 @@ class DomovitaParser(ParserStandart):
                 area = div_area[7].text.strip()
             else:
                 area = None
+            try:
+                images = set()
+                images_ul = html.find_all("ul", {"id": "mainGalleryUpdate"})
+                for img_ul in images_ul:
+                    img_tag = img_ul.findAll("img")
+                    image_link = img_tag[1]["data-src"]
+                    images.add(image_link)
+                images = list(images)
+            except Exception as e:
+                images = []
 
             flats.append(Flat(
                 link=link,
@@ -65,7 +75,8 @@ class DomovitaParser(ParserStandart):
                 date=date,
                 city=city,
                 street=street,
-                area=area
+                area=area,
+                images=images
             ))
             print()
             print(f"Обработано {counter} из {len(links)}")
