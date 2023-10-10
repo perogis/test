@@ -12,7 +12,7 @@ class DomovitaParser(ParserStandart):
     def get_parser_name(self):
         return "domovita"
 
-    def get_all_last_flats_links(self, page_from=1, page_to=20):
+    def get_all_last_flats_links(self, page_from=1, page_to=50):
         """function for get and filter flat links"""
 
         flat_links = []
@@ -46,16 +46,6 @@ class DomovitaParser(ParserStandart):
                 description = None
             date = html.find('span', class_="publication-info__item publication-info__publication-date").text.strip()
             city = html.find(attrs={"id": "city"}).text.strip()
-            div_street = html.find_all("div", class_="object-info__parametr")
-            if len(div_street) >= 5:
-                street = div_street[6].text.strip()
-            else:
-                street = None
-            div_area = html.find_all("div", class_="object-info__parametr")
-            if len(div_area) >= 5:
-                area = div_area[7].text.strip()
-            else:
-                area = None
             try:
                 images = set()
                 images_ul = html.find_all("ul", {"id": "mainGalleryUpdate"})
@@ -66,6 +56,10 @@ class DomovitaParser(ParserStandart):
                 images = list(images)
             except Exception as e:
                 images = []
+            email_div = html.find('div', class_="owner-info__email")
+            email_tag = email_div.findAll("a")
+            email_link = email_tag[0]["href"]
+            email = email_link
 
             flats.append(Flat(
                 link=link,
@@ -74,9 +68,8 @@ class DomovitaParser(ParserStandart):
                 description=description,
                 date=date,
                 city=city,
-                street=street,
-                area=area,
-                images=images
+                images=images,
+                email=email
             ))
             print()
             print(f"Обработано {counter} из {len(links)}")
